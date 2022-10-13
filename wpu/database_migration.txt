@@ -1,0 +1,94 @@
+11:17 AM 9/7/2022
+
+
+-- Database Migration Laravel
+
+==================================
+
+# Introduction
+
+Sebelum melakukan migrasi databse, ada beberapa hal yang harus disiapkan.
+- Aplikasi database MySQL 
+- Ubah identitas database di file ".env"
+
+Migration seperti Version Control untuk database kita, yang bisa melacak perubahan pada database kita. Struktur database tidak dibuat di aplikasi DBMS, melainkan melalui class pada laravel. Untuk membuat migrasi, dapat menggunakan command php artisan.
+
+"php artisan make:migration"
+"php artisan make:migration buat_tabel"
+
+Jika sudah ada file migrasinya, selanjutnya cukup mengeksekusi file migrasinya
+
+"php artisan migrate"
+
+Jika kita belum membuat tabel, dan mengetikkan perintah "php artisan migrate" di command, maka akan ada beberapa tabel bawaan laravel yang akan termigrasi ke database kita. Untuk lokasi tabel-tabel tersebut berasal dari /database/migrations.
+
+
+# Migrate and Rollback
+
+Di dalam file migration, terdapat 2 buah method (up() dan down()). Method up() digunakan untuk membuat skema atau struktur dari tabel kita. Method up() akan dieksekusi ketika kita mengetikkan "php artisan migrate" di command. Sedangkan method down() digunakan untuk menghilangkan skema tabel yang kita buat. Untuk mengeksekusi method down(), dapat mengetikkan perintah 
+
+"php artisan migrate:rollback" 
+
+Jika kita rollback tabel kita, maka semua tabel akan hilang, kecuali tabel "migrations". Karena tabel "migrations" bertugas untuk melacak perubahan pada database kita.
+
+Laravel punya perintah lain untuk menjalankan rollback sekaligus migrate dalam satu perintah.
+
+"php artisan migrate:fresh"
+
+
+# Creating tables
+
+Untuk membuat field baru pada table, kita hanya perlu menambahkan di dalam schema. Untuk melihat tipe data yang tersedia, bisa mengunjungi dokumentasi laravel. Dalam pembuatan field baru, kita juga bisa menambahkan nilai default.
+contoh :
+
+"$table->boolean('is_admin')->default(false)"
+
+Jika sudah, kembali jalankan "migrate:fresh".
+
+
+# Eloquent ORM
+
+ORM (Object Relational Mapper) adalah sebuah fungsi untuk memetakan tiap-tiap data yang ada di database kita ke dalam sebuah object. Eloquent merupakan sebuah ORM yang memudahkan kita untuk berinteraksi dengan database kita. Ketika menggunakan Eloquent, setiap tabel di dalam database kita terhubung dengan Model yang digunakan untuk berinteraksi dengan tabel kita. Eloquent models juga dapat melakukan CRUD pada tabel kita.
+
+Untuk menggunakannya, kita bisa menggunakan tinker. Tinker adalah salah satu aplikasi pada laravel yang bisa kita gunakan untuk berinteraksi dengan aplikasi laravel kita.
+
+"php artisan tinker"
+
+Sebagai contoh, di dalam folder Models terdapat file bawaan Laravel, User.php. User.php ini berhubungan dengan file user yang ada di database. Jika dibuka, maka ada beberapa attribute untuk field dari tabel user. (fillable, hidden, casts)
+
+Sebelum mengisi data, lakukan instansiasi pada tabel user.
+
+"$user = new \App\Models\User";
+"$user = new User";
+
+Kemudian, isi masing-masing tabel yang bertatus "fillable"
+
+$user->name = 'Rian Basari';
+$user->email = 'rianbasari@gmail.com';
+$user->password = bcrypt('12345');
+$user->save()
+
+note: 
+- bcript() digunakan untuk mengenkripsi password user.
+- save() untuk menyimpan hasil insert data
+
+Untuk menampilkan semua data, ketikkan perintah:
+
+$user->all()
+
+Fungsi all() akan mengembalikan data berupa Collection.
+
+Jika ingin membuat record baru, lakukan instansiasi terlebih dahulu seperti di awal.
+
+
+# Accessing Data
+
+Untuk mengakses data yang sudah kita masukkan ke dalam database, kita bisa mencarinya berdasarkan id. (Posisi command masih berada di aplikasi tinker)
+
+$user->find(2)
+
+Jika kita memasukkan id yang tidak ada di tabel kita, maka gunakan perintah
+
+$user->findOrFail(2000)
+
+Akan muncul pesan error jika menggunakan findOrFail(). Jika hanya menggunakan find() hanya akan menghasilkan output null.

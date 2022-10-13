@@ -1,0 +1,42 @@
+-- Post Model
+
+
+Untuk membuat model baru, gunakan perintah artisan "php artisan make:model NamaModel". Dalam membuat model, kita bisa secara bersamaan membuat migrasi ketika model dibuat. Tambahkan "-m" untuk menambahkan file migrasi
+
+php artisan make:model -m Post
+
+
+Buka file migration (/database/migrations) untuk membuat skema dari tabel kita. buat struktur tabel di dalam method up()
+
+Schema::create('posts', function (Blueprint $table) {
+	$table->id();
+            $table->string('title');
+            $table->text('excerpt');
+            $table->text('body');
+            $table->timestamp('published_at')->nullable();
+            $table->timestamps();
+});
+
+
+Jika sudah dibuat struktur tabel, lakukan migrasi file dengan perintah "php artisan migrate:fresh". Setelah skema tabel dibuat, saatnya memasukkan data melalui command dengan masuk ke "php artisan tinker"
+
+$post = new Post
+$post->title = "Judul..."
+$post->excerpt = "text..."
+$post->body = "body..."
+$post->save()
+
+
+Untuk menampilkan semua data yang ada di database melalui tinker, gunakan perintah "Post::all()"
+
+Dalam Laravel, kita tidak perlu lagi membuat method all() untuk menampilkan data dari database kita.
+
+
+Jika kita ingin menyimpan sebuah tulisan blog dengan lebih dari 1 paragraf, maka kita dapat menyisipkan tag <p> di dalam body atau tulisan kita, yang nantinya ikut tersimpan di dalam database.
+
+Namun, ketika kita menggunakan {{ $post->body }} untuk mencetaknya, maka tag <p> akan ikut tercetak di halaman web kita. Ini dikarenakan tanda {{ }} sekaligus menjalankan fungsi htmlspecialchars.
+
+Untuk menjalankan tag html yang tersimpan di dalam text, maka menggunakan 
+
+{!! $post->body !!} 
+
